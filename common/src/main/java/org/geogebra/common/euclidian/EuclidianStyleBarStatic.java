@@ -311,7 +311,6 @@ public class EuclidianStyleBarStatic {
 		GeoElement geo;
 		String arg = null;
 
-		// arg = justifyArray[btnTableTextJustify.getSelectedIndex()];
 		arg = justify;
 		// if (this.btnTableTextLinesH.isSelected())
 		if (hSelected) {
@@ -340,7 +339,7 @@ public class EuclidianStyleBarStatic {
 			cmdText.append("TableText[");
 			for (int j = 0; j < input.length; j++) {
 				if (input[j] instanceof GeoList) {
-					cmdText.append(((GeoList) input[j])
+					cmdText.append(input[j]
 							.getFormulaString(StringTemplate.defaultTemplate,
 									false));
 					cmdText.append(",");
@@ -368,7 +367,7 @@ public class EuclidianStyleBarStatic {
 	 *            geos
 	 * @return true if "label style" button applies on all geos
 	 */
-	final static public GeoElement checkGeosForCaptionStyle(Object[] geos,
+	static public GeoElement checkGeosForCaptionStyle(Object[] geos,
 			int mode, App app) {
 		if (geos.length <= 0) {
 			return null;
@@ -428,21 +427,27 @@ public class EuclidianStyleBarStatic {
 	 *            line thickness
 	 * @return success
 	 */
-	public static boolean applyLineStyle(int lineStyleIndex, int lineSize, App app) {
+	public static boolean applyLineStyle(int lineStyleIndex, int lineSize, App app,
+				List<GeoElement> geos) {
 		int lineStyle = EuclidianView.getLineType(lineStyleIndex);
 		boolean needUndo = false;
-		app.getActiveEuclidianView().getEuclidianController().splitSelectedStrokes(true);
-		ArrayList<GeoElement> geos = app.getSelectionManager().getSelectedGeos();
-		for (int i = 0; i < geos.size(); i++) {
-			GeoElement geo = geos.get(i);
+		for (GeoElement geo : splitStrokes(geos, app)) {
 			if (geo.getLineType() != lineStyle
 					|| geo.getLineThickness() != lineSize) {
 				geo.setLineType(lineStyle);
 				geo.setLineThickness(lineSize);
 				geo.updateVisualStyleRepaint(GProperty.LINE_STYLE);
+				needUndo = true;
 			}
 		}
 		return needUndo;
+	}
+
+	private static List<GeoElement> splitStrokes(List<GeoElement> geos, App app) {
+		if (app.getActiveEuclidianView().getEuclidianController().splitSelectedStrokes(true)) {
+			return app.getSelectionManager().getSelectedGeos();
+		}
+		return geos;
 	}
 
 	/**
@@ -484,12 +489,9 @@ public class EuclidianStyleBarStatic {
 	 *            application
 	 * @return success
 	 */
-	public static boolean applyColor(GColor color,	double alpha, App app) {
+	public static boolean applyColor(GColor color,	double alpha, App app, List<GeoElement> geos) {
 		boolean needUndo = false;
-		app.getActiveEuclidianView().getEuclidianController().splitSelectedStrokes(true);
-		List<GeoElement> geos = app.getSelectionManager().getSelectedGeos();
-		for (int i = 0; i < geos.size(); i++) {
-			GeoElement geo = geos.get(i);
+		for (GeoElement geo : splitStrokes(geos, app)) {
 			// apply object color to all other geos except images or text
 			// removed: see MOW-441
 			// if (!(geo.getGeoElementForPropertiesDialog() instanceof GeoText))
@@ -947,12 +949,7 @@ public class EuclidianStyleBarStatic {
 			return locateable.isAbsoluteScreenLocActive();
 		}
 
-		if (geo.getParentAlgorithm() instanceof AlgoAttachCopyToView) {
-			return true;
-		}
-
-		return false;
-
+		return geo.getParentAlgorithm() instanceof AlgoAttachCopyToView;
 	}
 
 	/**
@@ -961,7 +958,7 @@ public class EuclidianStyleBarStatic {
 	 *            geo
 	 * @return true if the "fix object" button should be fixed for geo
 	 */
-	final static public boolean checkSelectedFixObject(GeoElement geo) {
+	static public boolean checkSelectedFixObject(GeoElement geo) {
 		return geo.isLocked();
 	}
 

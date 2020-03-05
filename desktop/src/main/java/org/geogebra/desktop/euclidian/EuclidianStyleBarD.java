@@ -1585,14 +1585,11 @@ public class EuclidianStyleBarD extends JToolBar
 		} else if (source == btnColor) {
 			if (EuclidianView.isPenMode(mode)) {
 				ec.getPen().setPenColor((btnColor.getSelectedColor()));
-				// btnLineStyle.setFgColor((Color)btnColor.getSelectedValue());
 			} else {
 				GColor color = btnColor.getSelectedColor();
 				float alpha = btnColor.getSliderValue() / 100.0f;
 				needUndo = EuclidianStyleBarStatic.applyColor(color,
-						alpha, app);
-				// btnLineStyle.setFgColor((Color)btnColor.getSelectedValue());
-				// btnPointStyle.setFgColor((Color)btnColor.getSelectedValue());
+						alpha, app, targetGeos);
 			}
 		}
 
@@ -1610,9 +1607,6 @@ public class EuclidianStyleBarD extends JToolBar
 				GColor color = btnTextColor.getSelectedColor();
 				needUndo = EuclidianStyleBarStatic.applyTextColor(targetGeos,
 						color);
-				// btnTextColor.setFgColor((Color)btnTextColor.getSelectedValue());
-				// btnItalic.setForeground((Color)btnTextColor.getSelectedValue());
-				// btnBold.setForeground((Color)btnTextColor.getSelectedValue());
 			}
 		} else if (source == btnLineStyle) {
 			if (btnLineStyle.getSelectedValue() != null) {
@@ -1623,7 +1617,7 @@ public class EuclidianStyleBarD extends JToolBar
 				} else {
 					int selectedIndex = btnLineStyle.getSelectedIndex();
 					int lineSize = btnLineStyle.getSliderValue();
-					needUndo = EuclidianStyleBarStatic.applyLineStyle(selectedIndex, lineSize, app);
+					needUndo = EuclidianStyleBarStatic.applyLineStyle(selectedIndex, lineSize, app, targetGeos);
 				}
 
 			}
