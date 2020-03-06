@@ -7827,8 +7827,9 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 	/**
 	 * Replace partially selected strokes by their parts.
+	 * @return whether any strokes were split
 	 */
-	public void splitSelectedStrokes(boolean removeOriginal) {
+	public boolean splitSelectedStrokes(boolean removeOriginal) {
 		boolean changed = false;
 		ArrayList<GeoElement> newSelection = new ArrayList<>();
 		ArrayList<GeoElement> oldSelection = new ArrayList<>(selection.getSelectedGeos());
@@ -7852,6 +7853,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			showDynamicStylebar();
 			startBoundingBoxState = null;
 		}
+		return changed;
 	}
 
 	/**
