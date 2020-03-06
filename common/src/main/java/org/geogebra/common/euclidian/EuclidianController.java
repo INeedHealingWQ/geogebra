@@ -10176,6 +10176,9 @@ public abstract class EuclidianController implements SpecialPointsListener {
 							&& lastSelectionToolGeoToRemove != null) {
 						selection.clearSelectedGeos(false, false);
 						selection.addSelectedGeoWithGroup(lastSelectionToolGeoToRemove);
+						if (lastSelectionToolGeoToRemove.hasGroup()) {
+							selection.setFocusedGroupElement(lastSelectionToolGeoToRemove);
+						}
 						view.setBoundingBox(((Drawable) view
 								.getDrawableFor(lastSelectionToolGeoToRemove))
 								.getBoundingBox());
